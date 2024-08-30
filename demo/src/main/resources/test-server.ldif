@@ -1,0 +1,82 @@
+# Domain Component (DC) Entry
+dn: dc=act,dc=fibernet
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: act
+
+# Organizational Units (OUs) Entries
+dn: ou=groups,dc=act,dc=fibernet
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+dn: ou=subgroups,ou=groups,dc=act,dc=fibernet
+objectclass: top
+objectclass: organizationalUnit
+ou: subgroups
+
+dn: ou=people,dc=act,dc=fibernet
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+dn: ou=space cadets,dc=act,dc=fibernet
+objectclass: top
+objectclass: organizationalUnit
+ou: space cadets
+
+dn: ou="quoted people",dc=act,dc=fibernet
+objectclass: top
+objectclass: organizationalUnit
+ou: "quoted people"
+
+dn: ou=otherpeople,dc=act,dc=fibernet
+objectclass: top
+objectclass: organizationalUnit
+ou: otherpeople
+
+# Individual User Entries
+dn: uid=ben,ou=people,dc=act,dc=fibernet
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Ben Alex
+sn: Alex
+uid: ben
+userPassword: $2a$10$c6bSeWPhg06xB1lvmaWNNe4NROmZiSpYhlocU/98HNr2MhIOiSt36
+
+dn: uid=bob,ou=people,dc=act,dc=fibernet
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Bob Hamilton
+sn: Hamilton
+uid: bob
+userPassword: bobspassword
+
+# Group Entries
+dn: cn=developers,ou=groups,dc=act,dc=fibernet
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: developers
+ou: developer
+uniqueMember: uid=ben,ou=people,dc=act,dc=fibernet
+uniqueMember: uid=bob,ou=people,dc=act,dc=fibernet
+
+dn: cn=managers,ou=groups,dc=act,dc=fibernet
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: managers
+ou: manager
+uniqueMember: uid=ben,ou=people,dc=act,dc=fibernet
+uniqueMember: cn=mouse\, jerry,ou=people,dc=act,dc=fibernet
+
+dn: cn=submanagers,ou=subgroups,ou=groups,dc=act,dc=fibernet
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: submanagers
+ou: submanager
+uniqueMember: uid=ben,ou=people,dc=act,dc=fibernet
