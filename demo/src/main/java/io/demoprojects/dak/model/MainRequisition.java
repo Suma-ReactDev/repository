@@ -1,5 +1,6 @@
 package io.demoprojects.dak.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class MainRequisition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long requestid;
 	
-	@OneToMany(mappedBy = "requisition", fetch = FetchType.LAZY)
-    private List<MainRequisitionStatusHistory> statusHistories;
+	@OneToMany(mappedBy = "requisition", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<MainRequisitionStatusHistory> statusHistories = new ArrayList<>();;
 	
 	private Date requestdate;
 	

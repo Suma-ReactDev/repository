@@ -29,6 +29,7 @@ import io.demoprojects.dak.dto.MainRequestDto;
 import io.demoprojects.dak.model.MainRequisition;
 import io.demoprojects.dak.model.MainRequisitionStatusHistory;
 import io.demoprojects.dak.model.Requisition;
+import io.demoprojects.dak.payload.ApiResponse;
 import io.demoprojects.dak.service.IRequisitionService;
 import io.demoprojects.dak.util.RequisitionDetailDto;
 import io.demoprojects.dak.util.RequisitionUpdateDto;
@@ -74,12 +75,31 @@ public class RequisitionController {
 	        return "index";
 	    }
 	 
-	    @PostMapping("/mainrequest")
-	    public ResponseEntity<MainRequisition> createRequisition(@RequestBody MainRequisition requisition) {
-	        MainRequisition createdRequisition = requisitionService.createMainRequisition(requisition);
-	        return ResponseEntity.ok(createdRequisition);
-	    }
+//	    @PostMapping("/mainrequest")
+//	    public ResponseEntity<MainRequisition> createRequisition(@RequestBody MainRequisition requisition) {
+//	        MainRequisition createdRequisition = requisitionService.createMainRequisition(requisition);
+//	        return ResponseEntity.ok(createdRequisition);
+//	    }
 	    
+	    @PostMapping("/mainrequest")
+	    public ResponseEntity<ApiResponse> createMainRequisition(@RequestBody MainRequisition requisition) {
+	        try {
+	        	MainRequisition createdRequisition = requisitionService.createMainRequisition(requisition);
+	            ApiResponse response = new ApiResponse(
+	                    HttpStatus.OK.value(),
+	                    "Requisition created successfully",
+	                    createdRequisition  // can replace with any additional data if needed
+	            );
+	            return ResponseEntity.ok(response);
+	        } catch (Exception e) {
+	            ApiResponse response = new ApiResponse(
+	                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+	                    "Failed to create requisition: " + e.getMessage(),
+	                    null
+	            );
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	        }
+	    }
 	    
 	    @GetMapping("/request-details")
 	    public ResponseEntity<List<RequisitionDetailDto>> getAllRequisitionsByRequestdate() {
@@ -133,17 +153,26 @@ public class RequisitionController {
 //	        return ResponseEntity.ok(savedRequisition);
 //	    }
 	 
-	 @PostMapping("/add-requisition")
-	    public ResponseEntity<String> createRequisition(@RequestBody RequisitionDetailDto createDto) {
+	    @PostMapping("/add-requisition")
+	    public ResponseEntity<ApiResponse> createRequisition(@RequestBody RequisitionDetailDto createDto) {
 	        try {
 	            requisitionService.createRequisition(createDto);
-	            return ResponseEntity.ok("Requisition created successfully");
+	            ApiResponse response = new ApiResponse(
+	                    HttpStatus.OK.value(),
+	                    "Requisition created successfully",
+	                    null  // You can replace null with any additional data if needed
+	            );
+	            return ResponseEntity.ok(response);
 	        } catch (Exception e) {
-	            // Handle any exceptions that occur during requisition creation
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body("Failed to create requisition: " + e.getMessage());
+	            ApiResponse response = new ApiResponse(
+	                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+	                    "Failed to create requisition: " + e.getMessage(),
+	                    null
+	            );
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
 	    }
+
 	 
 	 @GetMapping("/info")
 	    public ResponseEntity<String> getCurrentUser() {
@@ -195,9 +224,32 @@ public class RequisitionController {
 //        return requisitionService.getRequisitionItemDetails(demandNo);
 //    }
 	    
+//	    @PostMapping("/signin")
+//	    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDto loginRequest, HttpServletRequest request) {
+//	        Map<String, String> response = new HashMap<>();
+//	        try {
+//	            UsernamePasswordAuthenticationToken authToken =
+//	                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+//
+//	            // Authenticate the user
+//	            Authentication authentication = authenticationManager.authenticate(authToken);
+//	            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//	            // Create a session and store the authentication object
+//	            HttpSession session = request.getSession(true);
+//	            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+//	            System.out.println("SecurityContextHolder.getContext() :: "+ SecurityContextHolder.getContext());
+//	            // Prepare JSON response
+//	            response.put("message", "Login successful, session created.");
+//	            return ResponseEntity.ok(response);
+//	        } catch (Exception e) {
+//	            response.put("error", "Invalid username or password.");
+//	            return ResponseEntity.status(401).body(response);
+//	        }
+//	    }
 	    @PostMapping("/signin")
-	    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDto loginRequest, HttpServletRequest request) {
-	        Map<String, String> response = new HashMap<>();
+	    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequestDto loginRequest, HttpServletRequest request) {
+	        Map<String, Object> response = new HashMap<>();
 	        try {
 	            UsernamePasswordAuthenticationToken authToken =
 	                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
@@ -209,15 +261,22 @@ public class RequisitionController {
 	            // Create a session and store the authentication object
 	            HttpSession session = request.getSession(true);
 	            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-	            System.out.println("SecurityContextHolder.getContext() :: "+ SecurityContextHolder.getContext());
+
+	            // Get the authenticated user's details
+	            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
 	            // Prepare JSON response
 	            response.put("message", "Login successful, session created.");
+	            response.put("username", userDetails.getUsername());
+	            // Add any other user details you want to include
+
 	            return ResponseEntity.ok(response);
 	        } catch (Exception e) {
 	            response.put("error", "Invalid username or password.");
 	            return ResponseEntity.status(401).body(response);
 	        }
 	    }
+
 
 	    @PostMapping("/signout")
 	    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {

@@ -259,6 +259,7 @@ import jakarta.transaction.Transactional;
 
 			return requisitions.stream().map(requisition -> {
 	            MainRequestDto dto = new MainRequestDto();
+	            dto.setRequestid(requisition.getRequestid());
 	            dto.setRequestdate((Timestamp) requisition.getRequestdate());
 	            dto.setDirectorate(requisition.getDirectorate());
 	            dto.setReceivedfrom(requisition.getReceivedfrom());
@@ -295,6 +296,35 @@ import jakarta.transaction.Transactional;
 		    statusHistoryRepo.save(statusHistory);
 
 		    return mainRequisitionRepo.save(requisition);
+		}
+
+		@Override
+		public MainRequisition updateMainRequisition(Long id, MainRequestDto requisitionDTO) {
+			// TODO Auto-generated method stub
+			 MainRequisition requisition = mainRequisitionRepo.findById(id)
+				        .orElseThrow(() -> new ResourceNotFoundException("Requisition not found for this id :: " + id));
+
+				    requisition.setRequestdate(requisitionDTO.getRequestdate());
+				    requisition.setReceivedfrom(requisitionDTO.getReceivedfrom());
+				    requisition.setDirectorate(requisitionDTO.getDirectorate());
+				    requisition.setSubject(requisitionDTO.getSubject());
+				    requisition.setRemarks(requisitionDTO.getRemarks());
+
+				    // Update status
+				    MainRequisitionStatusHistory statusHistory = new MainRequisitionStatusHistory();
+				    statusHistory.setRequisition(requisition);
+				    statusHistory.setStatus(requisitionDTO.getStatus());
+				    statusHistory.setStatusChangeDate(new Date()); // Automate status change date
+
+				    statusHistoryRepo.save(statusHistory);
+
+				    return mainRequisitionRepo.save(requisition);
+		}
+
+		@Override
+		public void deleteRequisition(Long id) {
+			// TODO Auto-generated method stub
+			mainRequisitionRepo.deleteById(id);
 		}
 
 //		alternate for the above
@@ -358,19 +388,19 @@ import jakarta.transaction.Transactional;
 //		    return ResponseEntity.ok(updatedRequisition);
 //		}
 
-		@Override
-	    @Transactional
-	    public void deleteRequisition(Long id) {
-	        // Check if the requisition exists
-	        if (!mainRequisitionRepo.existsById(id)) {
-	            throw new ResourceNotFoundException("Requisition not found for this id :: " + id);
-	        }
-
-	        // Optionally delete related status history records
-	        statusHistoryRepo.deleteByRequisitionId(id);
-
-	        // Delete the requisition
-	        mainRequisitionRepo.deleteById(id);
-	    }
+//		@Override
+//	    @Transactional
+//	    public void deleteRequisition(Long id) {
+//	        // Check if the requisition exists
+//	        if (!mainRequisitionRepo.existsById(id)) {
+//	            throw new ResourceNotFoundException("Requisition not found for this id :: " + id);
+//	        }
+//
+//	        // Optionally delete related status history records
+//	        statusHistoryRepo.deleteByRequisitionId(id);
+//
+//	        // Delete the requisition
+//	        mainRequisitionRepo.deleteById(id);
+//	    }
 
 }

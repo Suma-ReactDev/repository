@@ -39,8 +39,13 @@ public interface IRequisitionService {
     public List<MainRequestDto> getAllRequisitionsWithLatestStatus();
     
     public MainRequisition updateRequisition(Long id, MainRequestDto requisitionDTO);
+    
+    public MainRequisition updateMainRequisition(Long id, MainRequestDto requisitionDTO);
 
     public void deleteRequisition(Long id);
+    
+
+//    public void deleteRequisition(Long id);
 
     
 }

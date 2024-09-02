@@ -18,6 +18,6 @@ public interface MainRequisitionStatusHistoryRepo extends JpaRepository<MainRequ
 
     MainRequisitionStatusHistory findTopByRequisitionOrderByStatusChangeDateDesc(MainRequisition requisition);
 
-    void deleteByRequisitionId(Long requisitionId);
+//    void deleteByRequisitionId(Long requisitionId);
 
 }

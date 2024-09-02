@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class MainRequestDto {
 	
 	 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	 	private Long requestid;
 	    private Date  requestdate;
 	    private String receivedfrom;
 	    private String directorate;
@@ -16,6 +17,13 @@ public class MainRequestDto {
 	    private String status;
 	    private Date statusChangeDate;
 	    
+	    
+		public Long getRequestid() {
+			return requestid;
+		}
+		public void setRequestid(Long requestid) {
+			this.requestid = requestid;
+		}
 		public Date getRequestdate() {
 			return requestdate;
 		}

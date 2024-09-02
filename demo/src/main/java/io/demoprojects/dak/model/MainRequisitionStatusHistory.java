@@ -21,7 +21,7 @@ public class MainRequisitionStatusHistory {
 	private Long slno;
 
 	    @ManyToOne
-	    @JoinColumn(name = "requestid")
+	    @JoinColumn(name = "requestid", nullable = false)
 	    @JsonIgnore
 	    private MainRequisition requisition;
 
