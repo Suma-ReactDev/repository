@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -247,46 +248,7 @@ public class RequisitionController {
 //	            return ResponseEntity.status(401).body(response);
 //	        }
 //	    }
-	    @PostMapping("/signin")
-	    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequestDto loginRequest, HttpServletRequest request) {
-	        Map<String, Object> response = new HashMap<>();
-	        try {
-	            UsernamePasswordAuthenticationToken authToken =
-	                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-
-	            // Authenticate the user
-	            Authentication authentication = authenticationManager.authenticate(authToken);
-	            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-	            // Create a session and store the authentication object
-	            HttpSession session = request.getSession(true);
-	            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-	            // Get the authenticated user's details
-	            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-	            // Prepare JSON response
-	            response.put("message", "Login successful, session created.");
-	            response.put("username", userDetails.getUsername());
-	            // Add any other user details you want to include
-
-	            return ResponseEntity.ok(response);
-	        } catch (Exception e) {
-	            response.put("error", "Invalid username or password.");
-	            return ResponseEntity.status(401).body(response);
-	        }
-	    }
-
-
-	    @PostMapping("/signout")
-	    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-	        HttpSession session = request.getSession(false);
-	        if (session != null) {
-	            session.invalidate(); // Invalidate the session to log the user out
-	        }
-	        SecurityContextHolder.clearContext();
-	        return ResponseEntity.ok("Logout successful, session invalidated.");
-	    }
+	   
 	}
 	    
 	    
