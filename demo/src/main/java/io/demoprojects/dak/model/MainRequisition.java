@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import io.demoprojects.dak.config.Auditable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +18,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name ="MAINREQUISITION")
-public class MainRequisition {
+@EntityListeners(AuditingEntityListener.class)
+public class MainRequisition extends Auditable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,9 +2,13 @@ package io.demoprojects.dak.model;
 
 import java.util.Date;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.demoprojects.dak.config.Auditable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,7 +18,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="MAINREQUISITIONSTATUSHISTORY")
-public class MainRequisitionStatusHistory {
+@EntityListeners(AuditingEntityListener.class)
+public class MainRequisitionStatusHistory extends Auditable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)    
