@@ -1,17 +1,15 @@
 package io.demoprojects.dak.controller;
 
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,20 +21,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import io.demoprojects.dak.dto.LoginRequestDto;
 import io.demoprojects.dak.dto.MainRequestDto;
 import io.demoprojects.dak.model.MainRequisition;
 import io.demoprojects.dak.model.MainRequisitionStatusHistory;
 import io.demoprojects.dak.model.Requisition;
+import io.demoprojects.dak.model.Upload;
 import io.demoprojects.dak.payload.ApiResponse;
 import io.demoprojects.dak.service.IRequisitionService;
 import io.demoprojects.dak.util.RequisitionDetailDto;
 import io.demoprojects.dak.util.RequisitionUpdateDto;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api")
@@ -48,12 +45,12 @@ public class RequisitionController {
 	 @Autowired
 	 private IRequisitionService requisitionService;
 	 
-	 private final AuthenticationManager authenticationManager;
-
-	    @Autowired
-	    public RequisitionController(AuthenticationManager authenticationManager) {
-	        this.authenticationManager = authenticationManager;
-	    }
+//	 private final AuthenticationManager authenticationManager;
+//
+//	    @Autowired
+//	    public RequisitionController(AuthenticationManager authenticationManager) {
+//	        this.authenticationManager = authenticationManager;
+//	    }
 	    
 //	 @GetMapping("/")
 //	 public String index() {
@@ -147,6 +144,53 @@ public class RequisitionController {
 	    public ResponseEntity<Void> deleteRequisition(@PathVariable Long id) {
 	        requisitionService.deleteRequisition(id);
 	        return ResponseEntity.noContent().build(); // Return 204 No Content status
+	    }
+	    
+	    @PostMapping("/upload")
+	    public ResponseEntity<String> uploadFile(@RequestParam("name") String name,
+	                                             @RequestParam("file") MultipartFile file) {
+	        try {
+	        	requisitionService.saveUpload(name, file);
+	            return ResponseEntity.ok("File uploaded successfully");
+	        } catch (Exception e) {
+	            return ResponseEntity.badRequest().body("Failed to upload file: " + e.getMessage());
+	        }
+	    }
+	    
+	    @GetMapping("/file/{id}")
+	    public ResponseEntity<byte[]> getFile(@PathVariable Long id) {
+	        Upload upload = requisitionService.getUpload(id);
+	        if (upload != null) {
+	            return ResponseEntity.ok()
+	                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + upload.getFileName() + "\"")
+	                    .body(upload.getFileData());
+	        }
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    @PostMapping("/mainrequestwithfile")
+	    public ResponseEntity<MainRequisition> addRequisition(
+	            @RequestParam("requestdate") String requestdate,
+	            @RequestParam("receivedfrom") String receivedfrom,
+	            @RequestParam("directorate") String directorate,
+	            @RequestParam("subject") String subject,
+	            @RequestParam("remarks") String remarks,
+	            @RequestParam("dakfile") MultipartFile dakfile) {
+	        try {
+	            MainRequisition requisition = new MainRequisition();
+	            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	            Date date = formatter.parse(requestdate);
+	            requisition.setRequestdate(date);
+	            requisition.setReceivedfrom(receivedfrom);
+	            requisition.setDirectorate(directorate);
+	            requisition.setSubject(subject);
+	            requisition.setRemarks(remarks);
+
+	            MainRequisition savedRequisition = requisitionService.saveRequisition(requisition, dakfile);
+	            return ResponseEntity.ok(savedRequisition);
+	        } catch (Exception e) {
+	            return ResponseEntity.badRequest().body(null);
+	        }
 	    }
 //	 @PostMapping("/postreq")
 //	 public ResponseEntity<Requisition> createRequisition(@RequestBody Requisition requisition) {

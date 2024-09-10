@@ -16,7 +16,8 @@ public class MainRequestDto {
 	    private String remarks;
 	    private String status;
 	    private Date statusChangeDate;
-	    
+	    private String fileName;
+	    private String fileUrl;
 	    
 		public Long getRequestid() {
 			return requestid;
@@ -66,4 +67,18 @@ public class MainRequestDto {
 		public void setRequestdate(Date requestdate) {
 			this.requestdate = requestdate;
 		}
+		public String getFileName() {
+			return fileName;
+		}
+		public void setFileName(String fileName) {
+			this.fileName = fileName;
+		}
+		public String getFileUrl() {
+			return fileUrl;
+		}
+		public void setFileUrl(String fileUrl) {
+			this.fileUrl = fileUrl;
+		}
+		
+		
 }

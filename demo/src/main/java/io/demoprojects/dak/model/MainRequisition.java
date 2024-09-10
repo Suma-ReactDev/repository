@@ -13,7 +13,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -38,6 +40,10 @@ public class MainRequisition extends Auditable {
 	
 	private String remarks;
 
+	@OneToOne
+    @JoinColumn(name = "file_id")
+    private Upload file;
+	
 	public Long getRequestid() {
 		return requestid;
 	}
@@ -92,6 +98,14 @@ public class MainRequisition extends Auditable {
 
 	public void setSubject(String subject) {
 		this.subject = subject;
+	}
+
+	public Upload getFile() {
+		return file;
+	}
+
+	public void setFile(Upload file) {
+		this.file = file;
 	}
 	
 	
